@@ -1,26 +1,20 @@
-"""Models and database functions."""
-# from database import *
+"""Models for database."""
 
 from flask_sqlalchemy import SQLAlchemy
-import os
 from dotenv import load_dotenv
+import os
 
 load_dotenv()
 
 db = SQLAlchemy()
 
-# Model definitions
-
 class Character(db.Model):
-    """"Characters"""
+    """"Character information."""
 
     __tablename__ = "characters"
 
     character_id = db.Column(db.String(200), primary_key=True)
     character_name = db.Column(db.String(200), nullable=True)
-
-    # # many to many relationship
-    # characters = db.relationship("Mood", backref="users", secondary="entries")
 
     def __repr__(self):
         """Provide helpful representation when printed."""
@@ -29,7 +23,7 @@ class Character(db.Model):
 
 
 class Movie(db.Model):
-    """Movies"""
+    """Movie information"""
 
     __tablename__ = "movies"
 
@@ -43,7 +37,7 @@ class Movie(db.Model):
 
 
 class Quote(db.Model):
-    """"Quotes"""
+    """"Quote information."""
 
     __tablename__ = "quotes"
 
@@ -51,7 +45,6 @@ class Quote(db.Model):
     character_id = db.Column(db.String(200), db.ForeignKey("characters.character_id"))
     movie_id = db.Column(db.String(200), db.ForeignKey("movies.movie_id"))
 
-    # one to many relationship
     character = db.relationship("Character", backref="quotes")
     movie = db.relationship("Movie", backref="quotes")
 
@@ -62,25 +55,22 @@ class Quote(db.Model):
 
 
 ################################################################################
-# Helper functions
-
+# Helper function
 
 def connect_to_db(app):
     """Connect the database to our Flask app."""
+
+    # Retrieve variables from .env file
     USER = os.getenv('POSTGRES_USER')
     PASSWORD = os.getenv("POSTGRES_PASSWORD")
     DB = os.getenv("POSTGRES_DB")
 
-    # Configure to use our PstgreSQL database
+    # Configure to use our PostgreSQL database
     app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://"+USER+":"+PASSWORD+"@localhost:5432/"+DB
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     db.app = app
-    if db.init_app(app):
-        print("db.app working")
-    else:
-        print("db.app not working")
-    # Used to recreate my database if I need to drop
-    # db.create_all()
+    print(db.app)
+
 
 
 if __name__ == "__main__":
@@ -88,8 +78,5 @@ if __name__ == "__main__":
     # you in a state of being able to work with the database directly.
 
     from server import app
-
-    if connect_to_db(app):
-        print("Model connected to DB.")
-    else:
-        print("not model")
+    connect_to_db(app)
+    print("Connected to DB.")
