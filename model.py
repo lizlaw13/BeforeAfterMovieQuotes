@@ -2,6 +2,10 @@
 # from database import *
 
 from flask_sqlalchemy import SQLAlchemy
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 db = SQLAlchemy()
 
@@ -15,8 +19,8 @@ class Character(db.Model):
     character_id = db.Column(db.String(200), primary_key=True)
     character_name = db.Column(db.String(200), nullable=True)
 
-    # many to many relationship
-    characters = db.relationship("Mood", backref="users", secondary="entries")
+    # # many to many relationship
+    # characters = db.relationship("Mood", backref="users", secondary="entries")
 
     def __repr__(self):
         """Provide helpful representation when printed."""
@@ -63,12 +67,18 @@ class Quote(db.Model):
 
 def connect_to_db(app):
     """Connect the database to our Flask app."""
+    USER = os.getenv('POSTGRES_USER')
+    PASSWORD = os.getenv("POSTGRES_PASSWORD")
+    DB = os.getenv("POSTGRES_DB")
 
     # Configure to use our PstgreSQL database
-    app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///movieQuotes"
+    app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://"+USER+":"+PASSWORD+"@localhost:5432/"+DB
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     db.app = app
-    db.init_app(app)
+    if db.init_app(app):
+        print("db.app working")
+    else:
+        print("db.app not working")
     # Used to recreate my database if I need to drop
     # db.create_all()
 
@@ -79,5 +89,7 @@ if __name__ == "__main__":
 
     from server import app
 
-    connect_to_db(app)
-    print("Connected to DB.")
+    if connect_to_db(app):
+        print("Model connected to DB.")
+    else:
+        print("not model")
