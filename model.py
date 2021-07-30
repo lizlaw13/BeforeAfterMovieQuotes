@@ -69,7 +69,6 @@ def connect_to_db(app):
     app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://"+USER+":"+PASSWORD+"@localhost:5432/"+DB
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     db.app = app
-    print(db.app)
 
 
 

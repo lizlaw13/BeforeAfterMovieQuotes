@@ -37,11 +37,9 @@ if __name__ == "__main__":
     # make sure templates, etc. are not cached in debug mode
     app.jinja_env.autoreload = app.debug
 
-    if connect_to_db(app):
-        print("server connected to db")
-    else:
-        print("not server")
-    # Use the DebugToolbar
-    # DebugToolbarExtension(app)
+    connect_to_db(app)
 
-    app.run(port=5000, host="0.0.0.0")
+    # Use the DebugToolbar
+    DebugToolbarExtension(app)
+
+    app.run(port=5432, host="0.0.0.0")
