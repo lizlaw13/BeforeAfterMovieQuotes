@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request
 from flask_migrate import Migrate
 from model import *
 from dotenv import load_dotenv
@@ -18,14 +18,12 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db.init_app(app)
 migrate = Migrate(app, db)
 
-
 @app.route("/")
 def hello():
     """Homepage"""
 
-
-
     return {"hello": "world"}
+
 if __name__ == "__main__":
 
     app.run(debug=True)
