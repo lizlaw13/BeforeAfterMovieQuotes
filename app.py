@@ -8,7 +8,7 @@ load_dotenv()
 
 app = Flask(__name__)
 # Retrieve variables from .env file
-USER = os.getenv('POSTGRES_USER')
+USER = os.getenv("POSTGRES_USER")
 PASSWORD = os.getenv("POSTGRES_PASSWORD")
 DB = os.getenv("POSTGRES_DB")
 
@@ -19,18 +19,11 @@ db.init_app(app)
 migrate = Migrate(app, db)
 
 
-
-#
-
-# @app.route("/", methods=["POST", "GET"])
-# def index():
-#     """Homepage"""
-#
-#     return render_template("index.html")
-
 @app.route("/")
 def hello():
     """Homepage"""
+
+
 
     return {"hello": "world"}
 if __name__ == "__main__":
