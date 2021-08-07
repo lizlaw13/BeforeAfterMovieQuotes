@@ -2,8 +2,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_seeder import Seeder
 import requests, os
-from movielist import movies
-
 
 
 db = SQLAlchemy()
@@ -67,8 +65,9 @@ class Quote(db.Model):
         return f"<Quote quote_id={self.quote_id} character_id={self.character_id} movie_id={self.movie_id}>"
 
 class DemoSeeder(Seeder):
-    movielist = movies
-    def run(self, movielist):
+
+    def run(self):
+
         url = "https://imdb8.p.rapidapi.com/title/get-quotes"
 
         KEY = os.getenv("RAPIDAPI_KEY")
@@ -79,22 +78,36 @@ class DemoSeeder(Seeder):
             "x-rapidapi-host": HOST
             }
 
-        # for movie in movielist:
-        movie_id = movielist[0]["id"][7:16]
-        querystring = {"tconst": movie_id}
+        movielist = [{
+            "id": "/title/tt0111161/",
+            "chartRating": 9.2
+        },
+        {
+            "id": "/title/tt0068646/",
+            "chartRating": 9.1
+        }
+        ]
+        for movie in movielist:
 
-        response = requests.request("GET", url, headers=headers, params=querystring).json()
+            m_id = movie["id"][7:16]
 
-        # querying response
-        c_id = response["quotes"][0]["lines"][0]["characters"][0]["characterId"][-10:-1]
-        c_name = response["quotes"][0]["lines"][0]["characters"][0]["character"]
-        m_id = movie_id
-        m_title = response["base"]["title"]
-        q_id = response["quotes"][0]["id"][-9:]
+            querystring = {"tconst": m_id}
+
+            response = requests.request("GET", url, headers=headers, params=querystring).json()
+### response will include list of quotes and we need to go through that movielist
 
 
+
+
+            # querying response
+            c_id = response["quotes"][0]["lines"][0]["characters"][0]["characterId"][-10:-1]
+            c_name = response["quotes"][0]["lines"][0]["characters"][0]["character"]
+
+            # adding response to database
+            new_character = Character(character_id=c_id, character_name=c_name)
+            self.db.session.add(new_character)
+
+            # m_title = response["base"]["title"]
+            #
+            # q_id = response["quotes"][0]["id"][-9:]
         
-        # adding response to database
-        new_character = Character(character_id=c_id, character_name=c_name)
-
-        self.db.session.add(new_character)

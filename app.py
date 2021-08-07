@@ -3,7 +3,6 @@ from flask_migrate import Migrate
 from flask_seeder import FlaskSeeder
 from seeds.model import *
 from dotenv import load_dotenv
-from movielist import movies
 import requests, os
 
 load_dotenv()
@@ -24,7 +23,7 @@ seeder = FlaskSeeder()
 seeder.init_app(app, db)
 
 
-lst = movies
+# lst = movies
 
 # @app.route("/quotes", methods=['POST'])
 # def loadDB(movielist):
@@ -77,4 +76,3 @@ def hello():
 if __name__ == "__main__":
 
     app.run(debug=True)
-
