@@ -3,9 +3,9 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_seeder import Seeder
 import requests, os
 
-
 db = SQLAlchemy()
 
+# Tables for database
 class Character(db.Model):
     """"Character information."""
 
@@ -64,10 +64,13 @@ class Quote(db.Model):
 
         return f"<Quote quote_id={self.quote_id} character_id={self.character_id} movie_id={self.movie_id}>"
 
+
+# For FlaskSeeder to load database
 class DemoSeeder(Seeder):
 
     def run(self):
 
+        # Request to RapidAPI to retrieve information for each movie
         url = "https://imdb8.p.rapidapi.com/title/get-quotes"
 
         KEY = os.getenv("RAPIDAPI_KEY")
@@ -87,6 +90,7 @@ class DemoSeeder(Seeder):
             "chartRating": 9.1
         }
         ]
+
         for movie in movielist:
 
             m_id = movie["id"][7:16]
@@ -94,20 +98,17 @@ class DemoSeeder(Seeder):
             querystring = {"tconst": m_id}
 
             response = requests.request("GET", url, headers=headers, params=querystring).json()
-### response will include list of quotes and we need to go through that movielist
-
-
+### response gives movie along with list of quotes and we need down and through that movielist
 
 
             # querying response
-            c_id = response["quotes"][0]["lines"][0]["characters"][0]["characterId"][-10:-1]
-            c_name = response["quotes"][0]["lines"][0]["characters"][0]["character"]
+            # c_id = response["quotes"][0]["lines"][0]["characters"][0]["characterId"][-10:-1]
+            # c_name = response["quotes"][0]["lines"][0]["characters"][0]["character"]
+            # m_title = response["base"]["title"]
+            # q_id = response["quotes"][0]["id"][-9:]
 
             # adding response to database
             new_character = Character(character_id=c_id, character_name=c_name)
             self.db.session.add(new_character)
-
-            # m_title = response["base"]["title"]
-            #
-            # q_id = response["quotes"][0]["id"][-9:]
-        
+            # new_movie = Movie(movie_id=m_id, movie_title=m_title)
+            # new_quote = Quote(quote_id=movie_quotes["quotes"][0]["id"][-9:], character_id=movie_quotes["quotes"][0]["lines"][0]["characters"][0], movie_id=data['movies.movie_id'])
