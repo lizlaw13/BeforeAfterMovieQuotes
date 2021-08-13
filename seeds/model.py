@@ -99,16 +99,22 @@ class DemoSeeder(Seeder):
 
             response = requests.request("GET", url, headers=headers, params=querystring).json()
 ### response gives movie along with list of quotes and we need down and through that movielist
+            # print("response quotes", response["quotes"])
+            for quote in response["quotes"]:
+                # print("******quote", quote)
+                # querying response
+                c_id = quote["lines"][0]["characters"][0]["characterId"][-10:-1]
+                c_name = quote["lines"][0]["characters"][0]["character"]
+                print("*********", self.db.session.query(Character).filter_by(character_id=c_id).first())
+                if self.db.session.query(Character).filter_by(character_id=c_id).first() is None:
+                    new_character = Character(character_id=c_id, character_name=c_name)
+                    self.db.session.add(new_character)
+                    print("*****all", self.db.session.query(Character.metadata.tables['characters']).all())
+                # print("**************committed")
+                # m_title = response["base"]["title"]
+                # q_id = response["quotes"][0]["id"][-9:]
 
+                # adding response to database
 
-            # querying response
-            # c_id = response["quotes"][0]["lines"][0]["characters"][0]["characterId"][-10:-1]
-            # c_name = response["quotes"][0]["lines"][0]["characters"][0]["character"]
-            # m_title = response["base"]["title"]
-            # q_id = response["quotes"][0]["id"][-9:]
-
-            # adding response to database
-            new_character = Character(character_id=c_id, character_name=c_name)
-            self.db.session.add(new_character)
-            # new_movie = Movie(movie_id=m_id, movie_title=m_title)
-            # new_quote = Quote(quote_id=movie_quotes["quotes"][0]["id"][-9:], character_id=movie_quotes["quotes"][0]["lines"][0]["characters"][0], movie_id=data['movies.movie_id'])
+                # new_movie = Movie(movie_id=m_id, movie_title=m_title)
+                # new_quote = Quote(quote_id=movie_quotes["quotes"][0]["id"][-9:], character_id=movie_quotes["quotes"][0]["lines"][0]["characters"][0], movie_id=data['movies.movie_id'])
