@@ -88,7 +88,7 @@ class DemoSeeder(Seeder):
         {
             "id": "/title/tt0068646/",
             "chartRating": 9.1
-        }       
+        }
         ]
 
         for movie in movielist:
@@ -96,25 +96,28 @@ class DemoSeeder(Seeder):
 
             querystring = {"tconst": m_id}
 
-            response = requests.request("GET", url, headers=headers, params=querystring).json()        
+            response = requests.request("GET", url, headers=headers, params=querystring).json()
             if self.db.session.query(Movie).filter_by(movie_id=m_id).first() is None:
                 m_title = response["base"]["title"]
 
                 new_movie = Movie(movie_id=m_id, movie_title=m_title)
                 self.db.session.add(new_movie)
-            else: 
+            else:
                 print('REJECTED HEHE')
 
-    
 
-            # for quote in response["quotes"]:
 
-            #     c_id = quote["lines"][0]["characters"][0]["characterId"][-10:-1]
-            #     c_name = quote["lines"][0]["characters"][0]["character"]
+            for quote in response["quotes"]:
 
-            #     if self.db.session.query(Character).filter_by(character_id=c_id).first() is None:
-            #         new_character = Character(character_id=c_id, character_name=c_name)
-            #         self.db.session.add(new_character)
+                try:
+                    c_id = quote["lines"][0]["characters"][0]["characterId"][-10:-1]
+                    c_name = quote["lines"][0]["characters"][0]["character"]
+
+                    if self.db.session.query(Character).filter_by(character_id=c_id).first() is None:
+                        new_character = Character(character_id=c_id, character_name=c_name)
+                        self.db.session.add(new_character)
+                except:
+                    pass
 
             # m_title = response["base"]["title"]
             # q_id = response["quotes"][0]["id"][-9:]
