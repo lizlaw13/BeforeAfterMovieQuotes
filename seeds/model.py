@@ -48,11 +48,13 @@ class Quote(db.Model):
     __tablename__ = "quotes"
 
     quote_id = db.Column(db.String(200), primary_key=True)
+    quote_text = db.Column(db.Text)
     character_id = db.Column(db.String(200), db.ForeignKey("characters.character_id"))
     movie_id = db.Column(db.String(200), db.ForeignKey("movies.movie_id"))
 
-    def __init__(self, quote_id, character_id, movie_id):
+    def __init__(self, quote_id, quote_text, character_id, movie_id):
         self.quote_id = quote_id
+        self.quote_text = quote_text
         self.character_id = character_id
         self.movie_id = movie_id
 
@@ -62,7 +64,7 @@ class Quote(db.Model):
     def __repr__(self):
         """Provide helpful representation when printed."""
 
-        return f"<Quote quote_id={self.quote_id} character_id={self.character_id} movie_id={self.movie_id}>"
+        return f"<Quote quote_id={self.quote_id} quote_text={self.quote_text} character_id={self.character_id} movie_id={self.movie_id}>"
 
 
 # For FlaskSeeder to load database
@@ -111,7 +113,6 @@ class DemoSeeder(Seeder):
 
 
                 for quote in response["quotes"]:
-
                     try:
                         c_id = quote["lines"][0]["characters"][0]["characterId"][-10:-1]
                         c_name = quote["lines"][0]["characters"][0]["character"]
@@ -121,10 +122,19 @@ class DemoSeeder(Seeder):
                             self.db.session.add(new_character)
                     except:
                         pass
+
+                    try: 
+                        q_id = quote["id"][-9:]
+                        q_text = quote["lines"][0]["text"]
+                        if self.db.session.query(Quote).filter_by(quote_id=q_id).first() is None:
+                            new_quote = Quote(quote_id=q_id,quote_text=q_text,character_id=c_id, movie_id=m_id)
+                            self.db.session.add(new_quote)
+                    except:
+                        pass
+
             except:
                 pass
             # m_title = response["base"]["title"]
-            # q_id = response["quotes"][0]["id"][-9:]
 
                 # adding response to database
 
