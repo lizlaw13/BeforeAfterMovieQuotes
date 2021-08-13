@@ -88,31 +88,36 @@ class DemoSeeder(Seeder):
         {
             "id": "/title/tt0068646/",
             "chartRating": 9.1
-        }
+        }       
         ]
 
         for movie in movielist:
-
             m_id = movie["id"][7:16]
 
             querystring = {"tconst": m_id}
 
-            response = requests.request("GET", url, headers=headers, params=querystring).json()
-### response gives movie along with list of quotes and we need down and through that movielist
-            # print("response quotes", response["quotes"])
-            for quote in response["quotes"]:
-                # print("******quote", quote)
-                # querying response
-                c_id = quote["lines"][0]["characters"][0]["characterId"][-10:-1]
-                c_name = quote["lines"][0]["characters"][0]["character"]
-                print("*********", self.db.session.query(Character).filter_by(character_id=c_id).first())
-                if self.db.session.query(Character).filter_by(character_id=c_id).first() is None:
-                    new_character = Character(character_id=c_id, character_name=c_name)
-                    self.db.session.add(new_character)
-                    print("*****all", self.db.session.query(Character.metadata.tables['characters']).all())
-                # print("**************committed")
-                # m_title = response["base"]["title"]
-                # q_id = response["quotes"][0]["id"][-9:]
+            response = requests.request("GET", url, headers=headers, params=querystring).json()        
+            if self.db.session.query(Movie).filter_by(movie_id=m_id).first() is None:
+                m_title = response["base"]["title"]
+
+                new_movie = Movie(movie_id=m_id, movie_title=m_title)
+                self.db.session.add(new_movie)
+            else: 
+                print('REJECTED HEHE')
+
+    
+
+            # for quote in response["quotes"]:
+
+            #     c_id = quote["lines"][0]["characters"][0]["characterId"][-10:-1]
+            #     c_name = quote["lines"][0]["characters"][0]["character"]
+
+            #     if self.db.session.query(Character).filter_by(character_id=c_id).first() is None:
+            #         new_character = Character(character_id=c_id, character_name=c_name)
+            #         self.db.session.add(new_character)
+
+            # m_title = response["base"]["title"]
+            # q_id = response["quotes"][0]["id"][-9:]
 
                 # adding response to database
 
