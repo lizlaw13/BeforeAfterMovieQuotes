@@ -28,7 +28,7 @@ seeder.init_app(app, db)
 def hello():
     """Homepage"""
 
-    quote1 = Quote.query.first()
+    quote1 = Quote.query.random()
 
     return render_template(
     "base.html",
