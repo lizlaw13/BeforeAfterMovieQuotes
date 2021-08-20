@@ -1,9 +1,9 @@
-from flask import Flask, request
+from flask import Flask, request, render_template
 from flask_migrate import Migrate
 from flask_seeder import FlaskSeeder
-from seeds.model import *
+from model import *
 from dotenv import load_dotenv
-import requests, os
+import os, random
 
 app = Flask(__name__)
 
@@ -28,7 +28,12 @@ seeder.init_app(app, db)
 def hello():
     """Homepage"""
 
-    return {"hello": "world"}
+    quote1 = Quote.query.first()
+
+    return render_template(
+    "base.html",
+    quote1=quote1
+    )
 
 if __name__ == "__main__":
 
